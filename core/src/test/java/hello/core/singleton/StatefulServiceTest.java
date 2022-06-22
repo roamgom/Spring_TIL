@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class StatefulServiceTest {
 
     @Test
-    @DisplayName("")
+    @DisplayName("싱글톤 패턴 확인")
     void statefulServiceSingleton() {
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(TestConfig.class);
 
