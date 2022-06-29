@@ -33,6 +33,9 @@ build/
 .vscode/
 
 
+# H2
+h2/
+
 # Created by https://www.toptal.com/developers/gitignore/api/java,macos,intellij+all,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,macos,intellij+all,git
 
