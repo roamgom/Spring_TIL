@@ -32,6 +32,14 @@ build/
 ### VS Code ###
 .vscode/
 
+# gradle
+.gradle/
+
+# H2
+h2/
+
+# static files
+static/
 
 # H2
 h2/
@@ -205,3 +213,4 @@ Temporary Items
 *.icloud
 
 # End of https://www.toptal.com/developers/gitignore/api/java,macos,intellij+all,git
+
