@@ -41,14 +41,10 @@ build/
 # H2
 h2/
 
-# static files
-static/
+# Bootstrap
+*bootstrap*
 
-# H2
-h2/
 
-# static files
-static/
 
 # Created by https://www.toptal.com/developers/gitignore/api/java,macos,intellij+all,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,macos,intellij+all,git
