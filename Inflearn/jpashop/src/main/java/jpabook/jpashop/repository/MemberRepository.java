@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Repository
@@ -23,7 +22,6 @@ public class MemberRepository {
     }
 
     public List<Member> findAll() {
-        // JPQL은 Entity 대상으로 Query를 준다.
         return em.createQuery("select m from Member m", Member.class)
                 .getResultList();
     }

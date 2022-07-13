@@ -3,7 +3,6 @@ package jpabook.jpashop.repository;
 import jpabook.jpashop.domain.item.Item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.thymeleaf.model.ITemplateEnd;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -16,10 +15,8 @@ public class ItemRepository {
 
     public void save(Item item) {
         if (item.getId() == null) {
-            // item 신규등록
             em.persist(item);
         } else {
-            // 기존 존재하는 item (update와 유사)
             em.merge(item);
         }
     }
