@@ -1,15 +1,18 @@
 package com.example.socialCrawler;
 
+import com.example.socialCrawler.config.AppProperties;
 import com.example.socialCrawler.domain.entity.ServiceUser;
 import com.example.socialCrawler.domain.repository.JpaUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.PostConstruct;
 
 @SpringBootApplication
+@EnableConfigurationProperties(AppProperties.class)
 public class SocialCrawlerApplication {
 
 	private final JpaUserRepository repository;
