@@ -1,8 +1,11 @@
 package com.example.socialCrawler.controller;
 
 import com.example.socialCrawler.domain.dto.AuthRequest;
+import com.example.socialCrawler.domain.dto.AuthResponse;
+import com.example.socialCrawler.domain.repository.UserRepository;
 import com.example.socialCrawler.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,8 +21,10 @@ import javax.validation.Valid;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private PasswordEncoder passwordEncoder;
-    private TokenProvider tokenProvider;
+    private final PasswordEncoder passwordEncoder;
+
+    private final UserRepository userRepository;
+    private final TokenProvider tokenProvider;
 
     @GetMapping("/")
     public String welcome() {
@@ -27,18 +32,19 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String authenticateUser(@Valid @RequestBody AuthRequest authRequest) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody AuthRequest authRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        authRequest.getUserName(),
+                        authRequest.getEmail(),
                         authRequest.getPassword()
                 )
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return tokenProvider.generateToken(authentication);
+        String token = tokenProvider.generateToken(authentication);
+        return ResponseEntity.ok(new AuthResponse(token));
     }
 
 }

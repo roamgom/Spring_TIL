@@ -1,9 +1,8 @@
 package com.example.socialCrawler;
 
 import com.example.socialCrawler.config.AppProperties;
-import com.example.socialCrawler.domain.entity.ServiceUser;
-import com.example.socialCrawler.domain.repository.JpaUserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.socialCrawler.domain.entity.User;
+import com.example.socialCrawler.domain.repository.UserRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -15,19 +14,20 @@ import javax.annotation.PostConstruct;
 @EnableConfigurationProperties(AppProperties.class)
 public class SocialCrawlerApplication {
 
-	private final JpaUserRepository repository;
+	private final UserRepository repository;
 
 	private final PasswordEncoder passwordEncoder;
 
-	public SocialCrawlerApplication(JpaUserRepository repository, PasswordEncoder passwordEncoder) {
+	public SocialCrawlerApplication(UserRepository repository, PasswordEncoder passwordEncoder) {
 		this.repository = repository;
 		this.passwordEncoder = passwordEncoder;
 	}
 
 	@PostConstruct
 	public void initUsers() {
-		ServiceUser user = ServiceUser.builder()
-				.userName("admin")
+		User user = User.builder()
+				.name("admin")
+				.email("admin@social.com")
 				.password(passwordEncoder.encode("test1234"))
 				.build();
 

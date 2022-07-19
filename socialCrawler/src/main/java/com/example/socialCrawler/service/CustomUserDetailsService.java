@@ -1,7 +1,7 @@
 package com.example.socialCrawler.service;
 
-import com.example.socialCrawler.domain.entity.ServiceUser;
-import com.example.socialCrawler.domain.repository.JpaUserRepository;
+import com.example.socialCrawler.domain.entity.User;
+import com.example.socialCrawler.domain.repository.UserRepository;
 import com.example.socialCrawler.exception.ResourceNotFoundException;
 import com.example.socialCrawler.security.UserPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,21 +10,19 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final JpaUserRepository userRepository;
+    private final UserRepository userRepository;
 
-    public CustomUserDetailsService(JpaUserRepository userRepository) {
+    public CustomUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        ServiceUser user = userRepository.findByUserName(username)
+        User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User name not found: " + username));
 
         return UserPrincipal.create(user);
@@ -32,7 +30,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Transactional
     public UserDetails loadUserById(Long id) {
-        ServiceUser user = userRepository.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
         return UserPrincipal.create(user);
     }

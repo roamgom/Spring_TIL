@@ -2,7 +2,12 @@ package com.example.socialCrawler.config;
 
 import com.example.socialCrawler.security.RestAuthenticationEntryPoint;
 import com.example.socialCrawler.security.jwt.TokenAuthenticationFilter;
+import com.example.socialCrawler.security.oauth2.CustomOauth2UserService;
+import com.example.socialCrawler.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.example.socialCrawler.security.oauth2.OAuth2AuthenticationFailureHandler;
+import com.example.socialCrawler.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.example.socialCrawler.service.CustomUserDetailsService;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@AllArgsConstructor
 @EnableGlobalMethodSecurity(
         securedEnabled = true,
         jsr250Enabled = true,
@@ -27,6 +33,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private CustomUserDetailsService userDetailsService;
+
+    private CustomOauth2UserService customOauth2UserService;
+
+    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+
+    private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
     // TODO: OAuth2
 
@@ -38,6 +50,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
+        return new HttpCookieOAuth2AuthorizationRequestRepository();
     }
 
     @Override
@@ -77,7 +94,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/auth/**", "/oauth2/**")
                         .permitAll()
                 .anyRequest()
-                    .authenticated();
+                    .authenticated()
+                    .and()
+                .oauth2Login()
+                    .authorizationEndpoint()
+                        .baseUri("/oauth2/authorize")
+                        .authorizationRequestRepository(cookieAuthorizationRequestRepository())
+                        .and()
+                    .redirectionEndpoint()
+                        .baseUri("/oauth2/callback/*")
+                        .and()
+                    .userInfoEndpoint()
+                        .userService(customOauth2UserService)
+                        .and()
+                    .successHandler(oAuth2AuthenticationSuccessHandler)
+                    .failureHandler(oAuth2AuthenticationFailureHandler);
 
         // JWT 인증방식 filter 추가
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
