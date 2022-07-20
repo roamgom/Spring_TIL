@@ -9,3 +9,13 @@ spring:
     show-sql: true
   profiles:
     include: secret
+
+
+# Secret values for JWT
+app:
+  auth:
+    secret-token: rgDuuacyu8mmDUkBghL7pVkDMCA3v7NmR29ijoTbccw
+    token-expiration-milli-sec: 864000000 # 하루
+  oauth2:
+    authorized-redirect-uris:
+      - http://localhost:8080/oauth2/redirect

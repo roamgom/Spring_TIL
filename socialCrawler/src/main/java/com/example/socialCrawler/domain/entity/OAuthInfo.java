@@ -1,5 +1,6 @@
 package com.example.socialCrawler.domain.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Entity
 public class OAuthInfo {
 

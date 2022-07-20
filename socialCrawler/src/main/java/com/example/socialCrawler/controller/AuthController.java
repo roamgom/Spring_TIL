@@ -3,6 +3,7 @@ package com.example.socialCrawler.controller;
 import com.example.socialCrawler.domain.dto.AuthRequest;
 import com.example.socialCrawler.domain.dto.AuthResponse;
 import com.example.socialCrawler.domain.repository.UserRepository;
+import com.example.socialCrawler.exception.OAuth2AuthenticationProcessingException;
 import com.example.socialCrawler.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -47,4 +48,13 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(token));
     }
 
+    @GetMapping("/oauth/validate-token")
+    public String oauthLogin(@RequestParam String token) {
+        boolean validateToken = tokenProvider.validateToken(token);
+        if (validateToken) {
+            return token;
+        } else {
+            throw new OAuth2AuthenticationProcessingException("Invalid Token");
+        }
+    }
 }
