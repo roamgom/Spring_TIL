@@ -27,11 +27,6 @@ public class AuthController {
     private final UserRepository userRepository;
     private final TokenProvider tokenProvider;
 
-    @GetMapping("/")
-    public String welcome() {
-        return "WELCOME!";
-    }
-
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody AuthRequest authRequest) {
 
@@ -48,11 +43,16 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(token));
     }
 
-    @GetMapping("/oauth/validate-token")
-    public String oauthLogin(@RequestParam String token) {
+    @GetMapping("hello")
+    public String test() {
+        return "Hello";
+    }
+
+    @GetMapping("/login/oauth")
+    public ResponseEntity<?> oauthLogin(@RequestParam String token) {
         boolean validateToken = tokenProvider.validateToken(token);
         if (validateToken) {
-            return token;
+            return ResponseEntity.ok(new AuthResponse(token));
         } else {
             throw new OAuth2AuthenticationProcessingException("Invalid Token");
         }

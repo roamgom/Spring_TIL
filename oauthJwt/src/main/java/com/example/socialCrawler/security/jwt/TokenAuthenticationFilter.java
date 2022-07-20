@@ -2,6 +2,7 @@ package com.example.socialCrawler.security.jwt;
 
 import com.example.socialCrawler.service.CustomUserDetailsService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,8 +19,10 @@ import java.io.IOException;
 @Slf4j
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
+    @Autowired
     private TokenProvider tokenProvider;
 
+    @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
     public TokenAuthenticationFilter() {
