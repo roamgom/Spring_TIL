@@ -1,6 +1,7 @@
 package com.example.socialCrawler.security;
 
 import com.example.socialCrawler.domain.entity.User;
+import com.example.socialCrawler.domain.entity.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,7 +30,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     }
 
     public static UserPrincipal create(User user) {
-        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(UserRole.USER.toString()));
 
         return new UserPrincipal(
                 user.getId(),

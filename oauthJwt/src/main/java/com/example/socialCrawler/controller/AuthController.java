@@ -2,9 +2,11 @@ package com.example.socialCrawler.controller;
 
 import com.example.socialCrawler.domain.dto.AuthRequest;
 import com.example.socialCrawler.domain.dto.AuthResponse;
-import com.example.socialCrawler.domain.repository.UserRepository;
-import com.example.socialCrawler.exception.OAuth2AuthenticationProcessingException;
+import com.example.socialCrawler.domain.dto.UserDto;
+import com.example.socialCrawler.domain.dto.UserSignUpRequest;
+import com.example.socialCrawler.security.UserPrincipal;
 import com.example.socialCrawler.security.jwt.TokenProvider;
+import com.example.socialCrawler.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,12 +22,16 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+    // 인증 Controller
+    // JWT 토큰인증 기반
+    // 로그인, 토큰 유효성 확인
+    // (회원가입은 OAuth2로 진행가능하기에 선택적으로 구현)
 
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
-
-    private final UserRepository userRepository;
     private final TokenProvider tokenProvider;
+
+    private final CustomUserDetailsService userDetailsService;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody AuthRequest authRequest) {
@@ -43,18 +49,22 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(token));
     }
 
-    @GetMapping("hello")
-    public String test() {
-        return "Hello";
+    @PostMapping("/signup")
+    public UserDto signupUser(@Valid @RequestBody UserSignUpRequest request) {
+        UserPrincipal user = (UserPrincipal) userDetailsService.registerNewUser(request);
+        return UserDto.builder()
+                .email(user.getEmail())
+                .name(user.getName())
+                .build();
     }
 
-    @GetMapping("/login/oauth")
-    public ResponseEntity<?> oauthLogin(@RequestParam String token) {
+    @GetMapping("/token")
+    public ResponseEntity<?> validateToken(@RequestParam String token) {
         boolean validateToken = tokenProvider.validateToken(token);
         if (validateToken) {
             return ResponseEntity.ok(new AuthResponse(token));
         } else {
-            throw new OAuth2AuthenticationProcessingException("Invalid Token");
+            throw new IllegalArgumentException("Invalid Token");
         }
     }
 }

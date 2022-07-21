@@ -2,6 +2,7 @@ package com.example.socialCrawler;
 
 import com.example.socialCrawler.config.AppProperties;
 import com.example.socialCrawler.domain.entity.User;
+import com.example.socialCrawler.domain.entity.UserRole;
 import com.example.socialCrawler.domain.repository.UserRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,6 +30,7 @@ public class SocialCrawlerApplication {
 				.name("admin")
 				.email("admin@social.com")
 				.password(passwordEncoder.encode("test1234"))
+				.userRole(UserRole.ADMIN)
 				.build();
 
 		repository.save(user);

@@ -7,7 +7,7 @@ import com.example.socialCrawler.security.oauth2.HttpCookieOAuth2AuthorizationRe
 import com.example.socialCrawler.security.oauth2.OAuth2AuthenticationFailureHandler;
 import com.example.socialCrawler.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import com.example.socialCrawler.service.CustomUserDetailsService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,7 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
+@RequiredArgsConstructor
 @EnableGlobalMethodSecurity(
         securedEnabled = true,
         jsr250Enabled = true,
@@ -32,33 +32,38 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 )
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private CustomUserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
-    private CustomOauth2UserService customOauth2UserService;
+    private final CustomOauth2UserService customOauth2UserService;
 
-    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
-    private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
     // TODO: OAuth2
 
     @Bean
     public TokenAuthenticationFilter tokenAuthenticationFilter() {
+        // JWT Token 필터 등록
         return new TokenAuthenticationFilter();
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // 패스워드 hash 인코더
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
+        // OAuth2 인증을 위한 Request/Response 속 Cookie 세팅
         return new HttpCookieOAuth2AuthorizationRequestRepository();
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        // Spring Security
+        // 유저 인증을 위해 userDetailsService 와
+        // 패스워드 검증을 위한 passwordEncoder 등록
         auth
                 .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
@@ -79,13 +84,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()
                 .csrf()
-                    .disable()
+                    .disable()  // CORS, Session 인증, CSRF 미사용
                 .formLogin()
-                    .disable()
+                    .disable()  // Form 로그인 미사용
                 .httpBasic()
-                    .disable()
+                    .disable()  // HTTP basic auth(브라우저기반) 미사용
                 .exceptionHandling()
-                    .authenticationEntryPoint(new RestAuthenticationEntryPoint())
+                    .authenticationEntryPoint(new RestAuthenticationEntryPoint())   // 인증, 인가 실패시 처리
                     .and()
                 .authorizeRequests()
                     .antMatchers("/",
@@ -100,25 +105,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                             "/**/*.js")
                 .permitAll()
                     .antMatchers("/auth/**", "/oauth2/**")
-                .permitAll()
+                .permitAll()    // auth, Oauth, 기타 asset 은 인증없이 접근허용
                     .anyRequest()
-                .authenticated()
+                .authenticated()    // 그 외 요청은 인증필요
                     .and()
-                .oauth2Login()
+                .oauth2Login()  // OAuth2 설정
                     .authorizationEndpoint()
-                    .baseUri("/oauth2/authorize")
-                    .authorizationRequestRepository(cookieAuthorizationRequestRepository())
-                    .and()
-                .redirectionEndpoint()
-                    .baseUri("/oauth2/callback/*")
-                    .and()
-                .userInfoEndpoint()
-                    .userService(customOauth2UserService)
-                    .and()
-                .successHandler(oAuth2AuthenticationSuccessHandler)
-                .failureHandler(oAuth2AuthenticationFailureHandler);
+                        .baseUri("/oauth2/authorize")   // OAuth2 로그인 URL
+                        .authorizationRequestRepository(cookieAuthorizationRequestRepository()) // OAuth2 인증 요청 쿠기처리 repository
+                        .and()
+                    .redirectionEndpoint()
+                        .baseUri("/oauth2/callback/*")  // OAuth2 로그인 redirect URL
+                        .and()
+                    .userInfoEndpoint()
+                        .userService(customOauth2UserService)   // OAuth2 유저 정보 처리 서비스
+                        .and()
+                    .successHandler(oAuth2AuthenticationSuccessHandler) // OAuth2 인증 성공/실패 handler
+                    .failureHandler(oAuth2AuthenticationFailureHandler);
 
-        // JWT 인증방식 filter 추가
+        // Username/Password 이전 JWT 인증방식 filter 추가
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 }
