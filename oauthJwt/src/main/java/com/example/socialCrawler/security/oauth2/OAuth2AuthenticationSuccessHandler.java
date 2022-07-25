@@ -31,6 +31,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
+    private static final String defaultRedirectUrl = "/auth/welcome";
+
     @Autowired
     public OAuth2AuthenticationSuccessHandler(TokenProvider tokenProvider, AppProperties appProperties, HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
         this.tokenProvider = tokenProvider;
@@ -42,10 +44,15 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         String targetUrl = determineTargetUrl(request, response, authentication);
 
+        String token = tokenProvider.generateToken(authentication);
+
         if (response.isCommitted()) {
             log.debug("Response already committed. Unable to redirect to " + targetUrl);
             return;
         }
+
+        // OAuth2 로그인 후 JWT token 을 Header 로 전달
+        response.setHeader("Authorization", "Bearer " + token);
 
         clearAuthenticationAttributes(request, response);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
@@ -60,13 +67,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             throw new BadRequestException("Unauthorized Redirect URI. failed to proceed with the authentication");
         }
 
-        String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
-        String token = tokenProvider.generateToken(authentication);
+        String targetUrl = redirectUri.orElse(defaultRedirectUrl);
 
         return UriComponentsBuilder.fromUriString(targetUrl)
-                .queryParam("token", token)
-                .build().toUriString();
-
+                .build().encode().toUriString();
     }
 
     protected void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {

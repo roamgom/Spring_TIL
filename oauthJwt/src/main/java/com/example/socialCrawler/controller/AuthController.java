@@ -9,6 +9,7 @@ import com.example.socialCrawler.security.jwt.TokenProvider;
 import com.example.socialCrawler.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,6 +33,11 @@ public class AuthController {
     private final TokenProvider tokenProvider;
 
     private final CustomUserDetailsService userDetailsService;
+
+    @GetMapping("/welcome")
+    public String welcome() {
+        return "Welcome!";
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody AuthRequest authRequest) {
@@ -59,7 +65,8 @@ public class AuthController {
     }
 
     @GetMapping("/token")
-    public ResponseEntity<?> validateToken(@RequestParam String token) {
+    public ResponseEntity<?> validateToken(@RequestParam @Nullable String token) {
+
         boolean validateToken = tokenProvider.validateToken(token);
         if (validateToken) {
             return ResponseEntity.ok(new AuthResponse(token));

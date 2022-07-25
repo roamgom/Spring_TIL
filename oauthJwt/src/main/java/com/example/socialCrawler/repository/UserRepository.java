@@ -1,4 +1,4 @@
-package com.example.socialCrawler.domain.repository;
+package com.example.socialCrawler.repository;
 
 import com.example.socialCrawler.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
