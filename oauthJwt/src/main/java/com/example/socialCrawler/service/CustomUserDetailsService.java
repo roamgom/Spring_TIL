@@ -2,11 +2,10 @@ package com.example.socialCrawler.service;
 
 import com.example.socialCrawler.domain.dto.UserSignUpRequest;
 import com.example.socialCrawler.domain.entity.User;
-import com.example.socialCrawler.domain.repository.UserRepository;
+import com.example.socialCrawler.repository.UserRepository;
 import com.example.socialCrawler.exception.ResourceNotFoundException;
 import com.example.socialCrawler.exception.UserAlreadyExistsException;
 import com.example.socialCrawler.security.UserPrincipal;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,7 +20,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    @Autowired
     public CustomUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

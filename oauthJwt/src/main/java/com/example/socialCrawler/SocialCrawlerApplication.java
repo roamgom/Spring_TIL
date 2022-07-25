@@ -3,7 +3,7 @@ package com.example.socialCrawler;
 import com.example.socialCrawler.config.AppProperties;
 import com.example.socialCrawler.domain.entity.User;
 import com.example.socialCrawler.domain.entity.UserRole;
-import com.example.socialCrawler.domain.repository.UserRepository;
+import com.example.socialCrawler.repository.UserRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
