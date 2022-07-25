@@ -1,4 +1,4 @@
-package com.example.socialCrawler.domain.repository;
+package com.example.socialCrawler.repository;
 
 import com.example.socialCrawler.domain.entity.AuthProvider;
 import com.example.socialCrawler.domain.entity.OAuthInfo;
